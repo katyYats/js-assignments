@@ -23,7 +23,12 @@
  *    console.log(r.getArea());   // => 200
  */
 function Rectangle(width, height) {
-    throw new Error('Not implemented');
+    this.width = width;
+    this.height = height;
+}
+
+Rectangle.prototype.getArea = function () {
+    return this.width * this.height;
 }
 
 
@@ -38,7 +43,7 @@ function Rectangle(width, height) {
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
 function getJSON(obj) {
-    throw new Error('Not implemented');
+    return JSON.stringify(obj);
 }
 
 
@@ -54,7 +59,7 @@ function getJSON(obj) {
  *
  */
 function fromJSON(proto, json) {
-    throw new Error('Not implemented');
+    return Object.setPrototypeOf(JSON.parse(json), proto);
 }
 
 
@@ -107,36 +112,71 @@ function fromJSON(proto, json) {
  */
 
 const cssSelectorBuilder = {
+    buffer: '',
 
     element: function(value) {
-        throw new Error('Not implemented');
+        this.throwError(1);
+        let obj = Object.create(cssSelectorBuilder);
+        obj.buffer = this.buffer + value;
+        obj.ind = 1;
+        return obj;
     },
 
     id: function(value) {
-        throw new Error('Not implemented');
+        this.throwError(2);
+        let obj = Object.create(cssSelectorBuilder);
+        obj.buffer = this.buffer + `#${value}`;
+        obj.ind = 2;
+        return obj;
     },
 
     class: function(value) {
-        throw new Error('Not implemented');
+        this.throwError(3);
+        let obj = Object.create(cssSelectorBuilder);
+        obj.buffer = this.buffer + `.${value}`;
+        obj.ind = 3;
+        return obj;
     },
 
     attr: function(value) {
-        throw new Error('Not implemented');
+        this.throwError(4);
+        let obj = Object.create(cssSelectorBuilder);
+        obj.buffer = this.buffer + `[${value}]`;
+        obj.ind = 4;
+        return obj;
     },
 
     pseudoClass: function(value) {
-        throw new Error('Not implemented');
+        this.throwError(5);
+        let obj = Object.create(cssSelectorBuilder);
+        obj.buffer = this.buffer + `:${value}`;
+        obj.ind = 5;
+        return obj;
     },
 
     pseudoElement: function(value) {
-        throw new Error('Not implemented');
+        this.throwError(6);
+        let obj = Object.create(cssSelectorBuilder);
+        obj.buffer = this.buffer + `::${value}`;
+        obj.ind = 6;
+        return obj;
     },
 
     combine: function(selector1, combinator, selector2) {
-        throw new Error('Not implemented');
+        let obj = Object.create(cssSelectorBuilder);
+        obj.buffer = `${selector1.buffer} ${combinator} ${selector2.buffer}`;
+        return obj;
+    },
+
+    stringify: function() {
+        return this.buffer;
+    },
+
+    throwError: function (ind) {
+        if (this.ind > ind) throw Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+        if (this.ind == ind && (ind == 1 || ind == 2 || ind == 6)) throw Error('Element, id and pseudo-element should not occur more then one time inside the selector');
     },
 };
-
 
 module.exports = {
     Rectangle: Rectangle,
